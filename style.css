@@ -19,6 +19,8 @@
     --shadow-color: rgba(0, 0, 0, 0.1);
     --logo-color: #1877f2;
     --input-focus: #1877f2;
+    --chat-bg: #f0f2f5;
+    --modal-overlay: rgba(0, 0, 0, 0.5);
 }
 
 [data-theme="dark"] {
@@ -36,6 +38,8 @@
     --shadow-color: rgba(0, 0, 0, 0.3);
     --logo-color: #4a9eff;
     --input-focus: #4a9eff;
+    --chat-bg: #18191a;
+    --modal-overlay: rgba(0, 0, 0, 0.8);
 }
 
 body {
@@ -47,7 +51,9 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* ===== LOGIN & REGISTER ===== */
+/* ============================================
+   LOGIN & REGISTER
+   ============================================ */
 .login-container {
     display: flex;
     justify-content: center;
@@ -59,7 +65,7 @@ body {
 
 .login-box {
     background: var(--bg-secondary);
-    padding: 28px 22px;
+    padding: 24px 20px;
     border-radius: 16px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     width: 100%;
@@ -70,13 +76,17 @@ body {
     max-width: 440px;
 }
 
-/* ===== LOGO ===== */
+.login-header {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
 .logo-container {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .logo-icon {
@@ -86,54 +96,58 @@ body {
 }
 
 @keyframes logoFloat {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-4px); }
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-4px);
+    }
 }
 
 .logo-container h1 {
     color: var(--logo-color);
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 700;
     letter-spacing: -0.5px;
 }
 
-.login-header {
-    text-align: center;
-    margin-bottom: 18px;
-}
-
 .login-header p {
     color: var(--text-muted);
-    font-size: 14px;
+    font-size: 13px;
     margin-top: 2px;
 }
 
-/* ===== THEME TOGGLE ===== */
+/* ============================================
+   THEME TOGGLE
+   ============================================ */
 .theme-toggle-container {
     text-align: center;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .theme-toggle-btn {
     background: var(--bg-input);
     color: var(--text-secondary);
     border: 1px solid var(--border-color);
-    padding: 7px 16px;
+    padding: 6px 14px;
     border-radius: 20px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     transition: 0.3s;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .theme-toggle-btn:active {
     transform: scale(0.95);
 }
 
-/* ===== ERROR MESSAGES ===== */
+/* ============================================
+   ERROR MESSAGES
+   ============================================ */
 #errorMsg,
 #registerErrorMsg {
     display: none;
@@ -153,14 +167,21 @@ body {
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
 }
 
-/* ===== GOOGLE BUTTON ===== */
+/* ============================================
+   GOOGLE BUTTON
+   ============================================ */
 .google-btn {
     width: 100%;
-    padding: 13px;
+    padding: 12px;
     background: white;
     color: #333;
     border: 1px solid #ddd;
@@ -173,7 +194,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .google-btn:active {
@@ -185,7 +206,9 @@ body {
     font-size: 18px;
 }
 
-/* ===== INPUT GROUP ===== */
+/* ============================================
+   INPUT GROUP
+   ============================================ */
 .input-group {
     position: relative;
     margin-bottom: 10px;
@@ -197,17 +220,17 @@ body {
     top: 50%;
     transform: translateY(-50%);
     color: #999;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 .input-group input,
 .input-group select,
 .input-group textarea {
     width: 100%;
-    padding: 12px 12px 12px 42px;
+    padding: 11px 12px 11px 42px;
     border: 1px solid var(--border-color);
     border-radius: 10px;
-    font-size: 15px;
+    font-size: 14px;
     background: var(--bg-input);
     color: var(--text-primary);
     transition: 0.3s;
@@ -217,9 +240,9 @@ body {
 }
 
 .input-group textarea {
-    padding: 12px;
+    padding: 11px 12px;
     resize: vertical;
-    min-height: 60px;
+    min-height: 50px;
 }
 
 .input-group input:focus,
@@ -241,16 +264,18 @@ body {
     color: #e74c3c;
 }
 
-/* ===== BUTTONS ===== */
+/* ============================================
+   BUTTONS
+   ============================================ */
 .login-box button[type="submit"],
 .register-box button[type="submit"] {
     width: 100%;
-    padding: 13px;
+    padding: 12px;
     background: #1877f2;
     color: white;
     border: none;
     border-radius: 10px;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: bold;
     cursor: pointer;
     transition: 0.3s;
@@ -265,9 +290,9 @@ body {
 .divider {
     text-align: center;
     color: var(--text-light);
-    margin: 16px 0;
+    margin: 14px 0;
     position: relative;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .divider::before,
@@ -280,12 +305,16 @@ body {
     background: var(--border-color);
 }
 
-.divider::before { left: 0; }
-.divider::after { right: 0; }
+.divider::before {
+    left: 0;
+}
+.divider::after {
+    right: 0;
+}
 
 .register-btn {
     width: 100%;
-    padding: 13px;
+    padding: 12px;
     background: #42b72a;
     color: white;
     border: none;
@@ -304,10 +333,12 @@ body {
     background: #36a420;
 }
 
-/* ===== NAVBAR (Mobile First) ===== */
+/* ============================================
+   NAVBAR (Mobile First)
+   ============================================ */
 .navbar {
     background: var(--bg-navbar);
-    padding: 8px 12px;
+    padding: 6px 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -316,7 +347,7 @@ body {
     z-index: 100;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     gap: 6px;
-    min-height: 50px;
+    min-height: 48px;
 }
 
 .logo-nav {
@@ -324,21 +355,21 @@ body {
     align-items: center;
     gap: 6px;
     color: white;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
 }
 
 .logo-icon-nav {
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .logo-text-nav {
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .nav-center {
     flex: 1;
-    max-width: 200px;
+    max-width: 180px;
     min-width: 80px;
     position: relative;
 }
@@ -348,7 +379,7 @@ body {
     align-items: center;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 20px;
-    padding: 5px 10px;
+    padding: 4px 10px;
     gap: 6px;
 }
 
@@ -381,7 +412,7 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     z-index: 1000;
     margin-top: 4px;
-    max-height: 200px;
+    max-height: 180px;
     overflow-y: auto;
     display: none;
 }
@@ -410,7 +441,7 @@ body {
     background: rgba(255, 255, 255, 0.15);
     color: white;
     border: none;
-    padding: 5px 8px;
+    padding: 4px 8px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
@@ -440,14 +471,18 @@ body {
     text-align: center;
 }
 
-/* ===== MAIN CONTENT ===== */
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
 .main-content {
     max-width: 1200px;
     margin: 0 auto;
     padding: 10px;
 }
 
-/* ===== FEED ===== */
+/* ============================================
+   FEED
+   ============================================ */
 .container {
     max-width: 700px;
     margin: 0 auto;
@@ -519,7 +554,9 @@ body {
     transform: scale(0.97);
 }
 
-/* ===== POST CARD ===== */
+/* ============================================
+   POST CARD
+   ============================================ */
 .post-card {
     background: var(--bg-card);
     border-radius: 12px;
@@ -530,8 +567,14 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .post-header {
@@ -582,7 +625,7 @@ body {
 
 .post-actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     border-top: 1px solid var(--border-light);
     padding-top: 8px;
     margin-top: 8px;
@@ -595,7 +638,7 @@ body {
     color: var(--text-muted);
     font-weight: 500;
     font-size: 12px;
-    padding: 3px 8px;
+    padding: 4px 8px;
     border-radius: 5px;
     transition: 0.2s;
     display: flex;
@@ -627,7 +670,9 @@ body {
     opacity: 1;
 }
 
-/* ===== COMMENTS ===== */
+/* ============================================
+   COMMENTS
+   ============================================ */
 .comments-section {
     display: none;
     margin-top: 10px;
@@ -680,7 +725,9 @@ body {
     font-size: 12px;
 }
 
-/* ===== PROFILE (Mobile) ===== */
+/* ============================================
+   PROFILE (Mobile)
+   ============================================ */
 .profile-container {
     max-width: 900px;
     margin: 0 auto;
@@ -712,6 +759,10 @@ body {
     border-radius: 6px;
     cursor: pointer;
     font-size: 13px;
+}
+
+.profile-cover .edit-profile-btn:active {
+    transform: scale(0.95);
 }
 
 .profile-avatar-large {
@@ -822,6 +873,10 @@ body {
     padding: 6px 12px;
 }
 
+.profile-actions button:last-child:active {
+    transform: scale(0.97);
+}
+
 .profile-tabs {
     display: flex;
     gap: 0;
@@ -853,7 +908,9 @@ body {
     border-bottom: 3px solid #1877f2;
 }
 
-/* ===== FRIENDS (Mobile) ===== */
+/* ============================================
+   FRIENDS (Mobile)
+   ============================================ */
 .friends-container {
     max-width: 800px;
     margin: 0 auto;
@@ -886,6 +943,8 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex: 1;
+    cursor: pointer;
 }
 
 .friend-card .friend-avatar {
@@ -899,6 +958,7 @@ body {
     justify-content: center;
     font-weight: bold;
     font-size: 12px;
+    flex-shrink: 0;
 }
 
 .friend-card .friend-name {
@@ -910,6 +970,12 @@ body {
 .friend-card .friend-username {
     font-size: 10px;
     color: var(--text-light);
+}
+
+.friend-card .friend-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
 }
 
 .friend-card .friend-actions button {
@@ -926,12 +992,29 @@ body {
     transform: scale(0.95);
 }
 
-.btn-accept { background: #1877f2; color: white; }
-.btn-reject { background: var(--bg-input); color: var(--text-secondary); }
-.btn-remove { background: #e74c3c; color: white; }
-.btn-chat { background: #42b72a; color: white; }
+.btn-accept {
+    background: #1877f2;
+    color: white;
+}
 
-/* ===== MESSAGES (Mobile) ===== */
+.btn-reject {
+    background: var(--bg-input);
+    color: var(--text-secondary);
+}
+
+.btn-remove {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-chat {
+    background: #42b72a;
+    color: white;
+}
+
+/* ============================================
+   MESSAGES (Mobile)
+   ============================================ */
 .messages-container {
     display: flex;
     flex-direction: column;
@@ -973,6 +1056,10 @@ body {
     cursor: pointer;
 }
 
+.new-chat-btn:active {
+    transform: scale(0.95);
+}
+
 .messages-chat {
     flex: 1;
     display: flex;
@@ -994,6 +1081,15 @@ body {
     font-size: 13px;
 }
 
+.chat-close-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: var(--text-light);
+    padding: 0 4px;
+}
+
 #chatMessages {
     flex: 1;
     padding: 10px 12px;
@@ -1013,8 +1109,14 @@ body {
 }
 
 @keyframes messageIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .chat-message.sent {
@@ -1168,7 +1270,9 @@ body {
     margin-bottom: 6px;
 }
 
-/* ===== MESSAGE NOTIFICATION ===== */
+/* ============================================
+   MESSAGE NOTIFICATION
+   ============================================ */
 .message-notification {
     position: fixed;
     bottom: 16px;
@@ -1186,8 +1290,14 @@ body {
 }
 
 @keyframes slideUp {
-    from { transform: translateY(80px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from {
+        transform: translateY(80px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .message-notification .notif-close {
@@ -1207,7 +1317,9 @@ body {
     opacity: 0.9;
 }
 
-/* ===== MODAL ===== */
+/* ============================================
+   MODAL
+   ============================================ */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -1258,82 +1370,156 @@ body {
     transform: scale(0.97);
 }
 
-/* ===== RESPONSIVE - TABLET ===== */
+/* ============================================
+   RESPONSIVE - TABLET
+   ============================================ */
 @media (min-width: 768px) {
     .login-box {
-        padding: 36px 32px;
+        padding: 32px 28px;
         max-width: 420px;
     }
-    
+
     .register-box {
         max-width: 460px;
     }
-    
+
     .logo-container h1 {
-        font-size: 34px;
+        font-size: 32px;
     }
-    
+
     .logo-icon {
         font-size: 40px;
     }
-    
+
     .messages-container {
         flex-direction: row;
         height: 70vh;
         min-height: 450px;
     }
-    
+
     .messages-sidebar {
         width: 280px;
         border-right: 1px solid var(--border-light);
         border-bottom: none;
         max-height: none;
+        background: var(--bg-secondary);
     }
-    
+
     .messages-chat {
         flex: 1;
     }
-    
+
     .chat-item .chat-last-msg {
         max-width: 130px;
     }
-    
+
     .message-notification {
         bottom: 30px;
         right: 30px;
         left: auto;
         max-width: 350px;
     }
-    
+
     .nav-center {
         max-width: 300px;
     }
-    
+
     .search-box input {
         font-size: 13px;
     }
+
+    .profile-avatar-large {
+        width: 90px;
+        height: 90px;
+        font-size: 36px;
+    }
+
+    .profile-cover {
+        padding: 50px 20px 25px;
+    }
 }
 
-/* ===== RESPONSIVE - DESKTOP ===== */
+/* ============================================
+   RESPONSIVE - DESKTOP
+   ============================================ */
 @media (min-width: 1024px) {
     .login-box {
-        padding: 40px 36px;
+        padding: 36px 32px;
         max-width: 440px;
     }
-    
+
     .register-box {
         max-width: 480px;
     }
-    
+
     .logo-container h1 {
-        font-size: 38px;
+        font-size: 36px;
     }
-    
+
     .logo-icon {
         font-size: 44px;
     }
-    
+
     .nav-center {
         max-width: 400px;
+    }
+}
+
+/* ============================================
+   RESPONSIVE - SMALL PHONE
+   ============================================ */
+@media (max-width: 380px) {
+    .login-box {
+        padding: 16px 14px;
+    }
+
+    .logo-container h1 {
+        font-size: 22px;
+    }
+
+    .logo-icon {
+        font-size: 28px;
+    }
+
+    .login-header p {
+        font-size: 12px;
+    }
+
+    .input-group input,
+    .input-group select {
+        padding: 9px 10px 9px 36px;
+        font-size: 13px;
+    }
+
+    .input-group i {
+        left: 10px;
+        font-size: 12px;
+    }
+
+    .nav-btn {
+        font-size: 12px;
+        min-width: 28px;
+        min-height: 28px;
+        padding: 3px 6px;
+    }
+
+    .logo-text-nav {
+        font-size: 13px;
+    }
+
+    .logo-icon-nav {
+        font-size: 16px;
+    }
+
+    .search-box input {
+        font-size: 11px;
+    }
+
+    .post-card {
+        padding: 10px;
+    }
+
+    .post-content {
+        font-size: 13px;
     }
 }

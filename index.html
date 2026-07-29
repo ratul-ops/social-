@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>সোশ্যাল মিডিয়া</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+    <!-- ===== LOGIN PAGE ===== -->
+    <div id="loginPage">
+        <div class="login-container">
+            <div class="login-box">
+                <div class="login-header">
+                    <h1>📘 সোশ্যাল</h1>
+                    <p>সংযুক্ত থাকুন, শেয়ার করুন</p>
+                </div>
+                <div id="errorMsg"></div>
+                <div id="verificationPending" style="display:none;background:#fff3cd;padding:12px;border-radius:8px;margin-bottom:15px;border:1px solid #ffc107;text-align:center;">
+                    <p style="color:#856404;margin-bottom:10px;font-size:14px;">⚠️ আপনার ইমেইল ভেরিফাই করা হয়নি।</p>
+                    <button onclick="window.resendVerification()" style="background:#ffc107;color:#333;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;font-weight:bold;font-size:13px;">আবার পাঠান</button>
+                    <button onclick="window.checkVerificationStatus()" style="background:#1877f2;color:white;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;font-weight:bold;font-size:13px;margin-left:8px;">চেক করুন</button>
+                </div>
+                <button id="googleSignInBtn" class="google-btn"><i class="fab fa-google"></i> Google দিয়ে লগইন</button>
+                <div class="divider">অথবা</div>
+                <form id="loginForm" onsubmit="return false;">
+                    <div class="input-group"><i class="fas fa-envelope"></i><input type="email" id="loginEmail" placeholder="ইমেইল" required /></div>
+                    <div class="input-group"><i class="fas fa-lock"></i><input type="password" id="loginPassword" placeholder="পাসওয়ার্ড" required /></div>
+                    <button type="submit" id="loginBtn">লগইন</button>
+                </form>
+                <div class="divider">নতুন ব্যবহারকারী?</div>
+                <button id="showRegisterBtn" class="register-btn"><i class="fas fa-user-plus"></i> নতুন অ্যাকাউন্ট তৈরি করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== REGISTER PAGE ===== -->
+    <div id="registerPage" style="display:none;">
+        <div class="login-container">
+            <div class="login-box register-box">
+                <div class="login-header">
+                    <h1>📘 সোশ্যাল</h1>
+                    <p>একাউন্ট তৈরি করুন</p>
+                </div>
+                <div id="registerErrorMsg"></div>
+                <form id="registerForm" onsubmit="return false;">
+                    <div class="input-group"><i class="fas fa-user"></i><input type="text" id="regFullName" placeholder="পূর্ণ নাম" required /></div>
+                    <div class="input-group"><i class="fas fa-at"></i><input type="text" id="regUsername" placeholder="ইউজারনেম" required /><small id="usernameCheck" style="display:block;margin-top:4px;font-size:12px;"></small></div>
+                    <div class="input-group"><i class="fas fa-calendar-alt"></i><input type="date" id="regDob" required /></div>
+                    <div class="input-group"><i class="fas fa-venus-mars"></i><select id="regGender" required><option value="">লিঙ্গ নির্বাচন করুন</option><option value="পুরুষ">পুরুষ</option><option value="মহিলা">মহিলা</option><option value="অন্যান্য">অন্যান্য</option></select></div>
+                    <div class="input-group"><i class="fas fa-phone"></i><input type="tel" id="regPhone" placeholder="মোবাইল নম্বর" /></div>
+                    <div class="input-group"><i class="fas fa-envelope"></i><input type="email" id="regEmail" placeholder="ইমেইল" required /></div>
+                    <div class="input-group"><i class="fas fa-lock"></i><input type="password" id="regPassword" placeholder="পাসওয়ার্ড (৬+ অক্ষর)" required /></div>
+                    <div class="input-group"><i class="fas fa-check-circle"></i><input type="password" id="regConfirmPassword" placeholder="পাসওয়ার্ড নিশ্চিত করুন" required /></div>
+                    <button type="submit" id="registerBtn">নিবন্ধন করুন</button>
+                </form>
+                <div class="divider">ইতিমধ্যে অ্যাকাউন্ট আছে?</div>
+                <button id="showLoginBtn" class="register-btn" style="background:#e4e6eb;color:#333;"><i class="fas fa-sign-in-alt"></i> লগইন করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FEED PAGE ===== -->
+    <div id="feedPage" style="display:none;">
+        <nav class="navbar">
+            <div class="nav-left"><div class="logo">𓁋🕊𓁇সোশ্যাল</div></div>
+            <div class="nav-center">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="ইউজারনেম দিয়ে খুঁজুন..." />
+                    <div id="searchResults"></div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <button class="nav-btn" onclick="showFeed()" title="হোম"><i class="fas fa-home"></i></button>
+                <button class="nav-btn" onclick="showFriends()" title="বন্ধু"><i class="fas fa-user-friends"></i><span id="friendRequestBadge" class="badge" style="display:none;">0</span></button>
+                <button class="nav-btn" onclick="showMessages()" title="মেসেজ"><i class="fas fa-comment-dots"></i><span id="messageBadge" class="badge" style="display:none;">0</span></button>
+                <button class="nav-btn" onclick="showProfile()" title="প্রোফাইল"><i class="fas fa-user"></i></button>
+                <button class="nav-btn" onclick="logout()" title="লগআউট"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <!-- FEED -->
+            <div id="feedContent">
+                <div class="container">
+                    <div class="post-box">
+                        <div class="post-box-header">
+                            <div class="avatar" id="feedUserAvatar">?</div>
+                            <textarea id="postInput" placeholder="আপনার মন কি বলছে?"></textarea>
+                        </div>
+                        <button class="post-btn" id="postBtn"><i class="fas fa-pen"></i> পোস্ট করুন</button>
+                    </div>
+                    <div id="postContainer"></div>
+                </div>
+            </div>
+
+            <!-- PROFILE -->
+            <div id="profileContent" style="display:none;">
+                <div class="profile-container">
+                    <div class="profile-card">
+                        <div class="profile-cover">
+                            <div class="profile-avatar-large" id="profileAvatar">?</div>
+                            <button class="edit-profile-btn" onclick="editProfile()"><i class="fas fa-pen"></i></button>
+                        </div>
+                        <div class="profile-info">
+                            <div class="profile-name-section">
+                                <h2 id="profileName">নাম</h2>
+                                <p class="profile-username" id="profileUsername">@username</p>
+                            </div>
+                            <div class="profile-bio" id="profileBio">বায়ো দিন...</div>
+                            <div class="profile-details">
+                                <span id="profileLocation"><i class="fas fa-map-marker-alt"></i> অবস্থান</span>
+                                <span id="profileWebsite"><i class="fas fa-link"></i> ওয়েবসাইট</span>
+                            </div>
+                            <div class="profile-stats">
+                                <div class="stat"><span class="stat-number" id="postCount">0</span><span class="stat-label">পোস্ট</span></div>
+                                <div class="stat"><span class="stat-number" id="followerCount">0</span><span class="stat-label">ফলোয়ার</span></div>
+                                <div class="stat"><span class="stat-number" id="followingCount">0</span><span class="stat-label">ফলোইং</span></div>
+                            </div>
+                            <div class="profile-actions">
+                                <button id="followBtn" onclick="toggleFollow()">ফলো করুন</button>
+                                <button onclick="startChatFromProfile()"><i class="fas fa-comment"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-tabs">
+                        <button class="tab-btn active" onclick="showProfilePosts()">পোস্ট</button>
+                        <button class="tab-btn" onclick="showProfilePhotos()">ফটো</button>
+                        <button class="tab-btn" onclick="showProfileVideos()">ভিডিও</button>
+                    </div>
+                    <div id="profilePostsContainer"></div>
+                </div>
+            </div>
+
+            <!-- FRIENDS -->
+            <div id="friendsContent" style="display:none;">
+                <div class="friends-container">
+                    <h2><i class="fas fa-user-friends"></i> বন্ধুরা</h2>
+                    <div id="friendRequestsSection"><h3>📩 ফ্রেন্ড রিকোয়েস্ট</h3><div id="friendRequestsList"></div></div>
+                    <div id="friendsListSection"><h3>👥 আপনার বন্ধু</h3><div id="friendsList"></div></div>
+                </div>
+            </div>
+
+            <!-- MESSAGES -->
+            <div id="messagesContent" style="display:none;">
+                <div class="messages-container">
+                    <div class="messages-sidebar">
+                        <div class="messages-sidebar-header">
+                            <h3><i class="fas fa-comment-dots"></i> চ্যাট</h3>
+                            <button onclick="showFriends()" class="new-chat-btn"><i class="fas fa-plus"></i> নতুন</button>
+                        </div>
+                        <div id="chatList"></div>
+                    </div>
+                    <div class="messages-chat">
+                        <div id="chatHeader"><h4>একটি বন্ধু নির্বাচন করুন</h4></div>
+                        <div id="chatMessages"></div>
+                        <div id="chatInputArea" style="display:none;">
+                            <input type="text" id="chatInput" placeholder="মেসেজ লিখুন..." />
+                            <button id="sendMessageBtn"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== EDIT PROFILE MODAL ===== -->
+    <div id="editProfileModal" style="display:none;">
+        <div class="modal-overlay" onclick="closeEditProfile()"></div>
+        <div class="modal-content">
+            <h2>প্রোফাইল এডিট করুন</h2>
+            <form id="editProfileForm" onsubmit="return false;">
+                <div class="input-group"><i class="fas fa-user"></i><input type="text" id="editFullName" placeholder="পূর্ণ নাম" /></div>
+                <div class="input-group"><i class="fas fa-at"></i><input type="text" id="editUsername" placeholder="ইউজারনেম" /><small id="editUsernameCheck" style="display:block;margin-top:4px;font-size:12px;"></small></div>
+                <div class="input-group"><i class="fas fa-align-left"></i><textarea id="editBio" placeholder="আপনার সম্পর্কে লিখুন..." rows="3"></textarea></div>
+                <div class="input-group"><i class="fas fa-map-marker-alt"></i><input type="text" id="editLocation" placeholder="আপনার অবস্থান" /></div>
+                <div class="input-group"><i class="fas fa-link"></i><input type="url" id="editWebsite" placeholder="আপনার ওয়েবসাইট" /></div>
+                <button type="submit" id="saveProfileBtn">সংরক্ষণ করুন</button>
+                <button type="button" onclick="closeEditProfile()" style="background:#e4e6eb;color:#333;padding:12px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-top:8px;">বাতিল করুন</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== MESSAGE NOTIFICATION ===== -->
+    <div id="messageNotification" class="message-notification" style="display:none;" onclick="this.style.display='none';showMessages();">
+        <span id="notifSender"></span>
+        <span id="notifMessage"></span>
+        <span class="notif-close" onclick="event.stopPropagation();this.parentElement.style.display='none';">✕</span>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js",
+                "firebase/database": "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js"
+            }
+        }
+    </script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>

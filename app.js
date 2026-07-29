@@ -4,7 +4,6 @@ import {
     onAuthStateChanged,
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
-    sendEmailVerification,
     signOut,
     GoogleAuthProvider,
     signInWithPopup
@@ -359,12 +358,13 @@ if (googleSignInBtn) {
 }
 
 // ============================================
-// AUTHENTICATION
+// 🔥 AUTHENTICATION - ভেরিফিকেশন ছাড়া
 // ============================================
 onAuthStateChanged(auth, (user) => {
     console.log('Auth state:', user ? 'Logged in' : 'Logged out');
 
     if (user) {
+        // Google Sign-In users
         if (isGoogleSignIn || user.providerData[0]?.providerId === 'google.com') {
             if (verificationPending) verificationPending.style.display = 'none';
             currentUser = user;
@@ -387,17 +387,9 @@ onAuthStateChanged(auth, (user) => {
             return;
         }
 
-        if (!user.emailVerified) {
-            if (verificationPending) verificationPending.style.display = 'block';
-            sendEmailVerification(user);
-            signOut(auth);
-            if (loginPage) loginPage.style.display = 'flex';
-            if (registerPage) registerPage.style.display = 'none';
-            if (feedPage) feedPage.style.display = 'none';
-            showError('⚠️ ইমেইল ভেরিফাই করুন। আমরা একটি লিংক পাঠিয়েছি।');
-            return;
-        }
-
+        // ============================================
+        // ✅ Email/Password - ভেরিফিকেশন চেক নেই
+        // ============================================
         if (verificationPending) verificationPending.style.display = 'none';
         currentUser = user;
         if (loginPage) loginPage.style.display = 'none';
@@ -413,7 +405,28 @@ onAuthStateChanged(auth, (user) => {
                 listenForNewMessages();
                 updateMessageBadge();
             } else {
-                signOut(auth);
+                // If user exists in auth but not in database, create entry
+                console.log('User found in auth but not in database. Creating entry...');
+                const newUserData = {
+                    fullName: user.email.split('@')[0],
+                    username: generateUsername(user.email),
+                    email: user.email,
+                    bio: '',
+                    location: '',
+                    website: '',
+                    isVerified: true,
+                    createdAt: new Date().toISOString(),
+                    uid: user.uid
+                };
+                
+                set(ref(database, 'users/' + user.uid), newUserData).then(() => {
+                    currentUserData = newUserData;
+                    if (feedUserAvatar) feedUserAvatar.textContent = getInitials(currentUserData.fullName);
+                    showFeed();
+                    loadFriendRequests();
+                    listenForNewMessages();
+                    updateMessageBadge();
+                });
             }
         });
     } else {
@@ -428,7 +441,7 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // ============================================
-// REGISTER
+// REGISTER - ভেরিফিকেশন ছাড়া
 // ============================================
 if (registerBtn) {
     registerBtn.addEventListener('click', async () => {
@@ -468,13 +481,14 @@ if (registerBtn) {
         }
 
         try {
+            // Create user - NO verification email sent
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            await sendEmailVerification(user);
-
+            // ✅ Save username
             await set(ref(database, 'usernames/' + username), { uid: user.uid });
 
+            // ✅ Save user data
             await set(ref(database, 'users/' + user.uid), {
                 fullName: fullName,
                 username: username,
@@ -485,11 +499,12 @@ if (registerBtn) {
                 bio: '',
                 location: '',
                 website: '',
-                isVerified: false,
+                isVerified: true,
                 createdAt: new Date().toISOString(),
                 uid: user.uid
             });
 
+            // Clear form
             if (regFullName) regFullName.value = '';
             if (regUsername) regUsername.value = '';
             if (regDob) regDob.value = '';
@@ -500,16 +515,13 @@ if (registerBtn) {
             if (regConfirmPassword) regConfirmPassword.value = '';
             if (registerErrorMsg) registerErrorMsg.style.display = 'none';
 
-            await signOut(auth);
-
-            alert('✅ রেজিস্ট্রেশন সফল!\nইমেইলে ভেরিফিকেশন লিংক পাঠানো হয়েছে।');
-
-            showLoginPage();
+            // ✅ সরাসরি লগইন হয়ে যাবে - onAuthStateChanged handle করবে
+            alert('✅ রেজিস্ট্রেশন সফল! আপনি লগইন হয়ে গেছেন।');
 
         } catch (error) {
             console.error('Registration error:', error);
             if (error.code === 'auth/email-already-in-use') {
-                showRegisterError('এই ইমেইল ব্যবহার হচ্ছে!');
+                showRegisterError('এই ইমেইল ইতিমধ্যে ব্যবহার হচ্ছে!');
             } else if (error.code === 'auth/invalid-email') {
                 showRegisterError('সঠিক ইমেইল দিন!');
             } else if (error.code === 'auth/operation-not-allowed') {
@@ -522,7 +534,7 @@ if (registerBtn) {
 }
 
 // ============================================
-// LOGIN
+// LOGIN - ভেরিফিকেশন চেক ছাড়া
 // ============================================
 if (loginBtn) {
     loginBtn.addEventListener('click', async () => {
@@ -538,93 +550,26 @@ if (loginBtn) {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            if (!user.emailVerified) {
-                await sendEmailVerification(user);
-                await signOut(auth);
-                if (loginEmail) loginEmail.value = '';
-                if (loginPassword) loginPassword.value = '';
-                if (verificationPending) verificationPending.style.display = 'block';
-                showError('⚠️ ইমেইল ভেরিফাই করুন! আমরা লিংক পাঠিয়েছি।');
-                return;
-            }
-
+            // ✅ NO verification check - সরাসরি লগইন
+            console.log('✅ Login successful for:', email);
             if (loginEmail) loginEmail.value = '';
             if (loginPassword) loginPassword.value = '';
             if (errorMsg) errorMsg.style.display = 'none';
-            if (verificationPending) verificationPending.style.display = 'none';
 
         } catch (error) {
+            console.error('Login error:', error);
             if (error.code === 'auth/user-not-found') {
                 showError('এই ইমেইল দিয়ে অ্যাকাউন্ট নেই!');
             } else if (error.code === 'auth/wrong-password') {
                 showError('পাসওয়ার্ড ভুল!');
+            } else if (error.code === 'auth/too-many-requests') {
+                showError('অনেক চেষ্টা করেছেন, কিছুক্ষণ পর চেষ্টা করুন!');
             } else {
                 showError('এরর: ' + error.message);
             }
         }
     });
 }
-
-// ============================================
-// RESEND VERIFICATION
-// ============================================
-window.resendVerification = async function() {
-    try {
-        if (currentUser) {
-            await sendEmailVerification(currentUser);
-            alert('✅ নতুন ভেরিফিকেশন ইমেইল পাঠানো হয়েছে!');
-            return;
-        }
-        const email = loginEmail ? loginEmail.value.trim() : '';
-        const password = loginPassword ? loginPassword.value.trim() : '';
-        if (!email || !password) {
-            showError('ইমেইল এবং পাসওয়ার্ড দিন!');
-            return;
-        }
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        await sendEmailVerification(userCredential.user);
-        await signOut(auth);
-        alert('✅ নতুন ভেরিফিকেশন ইমেইল পাঠানো হয়েছে!');
-    } catch (error) {
-        showError('ইমেইল পাঠাতে ব্যর্থ: ' + error.message);
-    }
-};
-
-window.checkVerificationStatus = async function() {
-    try {
-        if (!currentUser) {
-            const email = loginEmail ? loginEmail.value.trim() : '';
-            const password = loginPassword ? loginPassword.value.trim() : '';
-            if (!email || !password) {
-                showError('ইমেইল এবং পাসওয়ার্ড দিন!');
-                return;
-            }
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            await userCredential.user.reload();
-            if (userCredential.user.emailVerified) {
-                alert('✅ ইমেইল ভেরিফাই করা হয়েছে!');
-                await signOut(auth);
-                loginBtn.click();
-            } else {
-                alert('❌ ইমেইল ভেরিফাই হয়নি। আবার লিংক পাঠাচ্ছি...');
-                await sendEmailVerification(userCredential.user);
-                await signOut(auth);
-            }
-            return;
-        }
-        await currentUser.reload();
-        if (currentUser.emailVerified) {
-            alert('✅ ইমেইল ভেরিফাই করা হয়েছে!');
-            await update(ref(database, 'users/' + currentUser.uid), { isVerified: true });
-            location.reload();
-        } else {
-            alert('❌ ইমেইল ভেরিফাই হয়নি। আবার লিংক পাঠাচ্ছি...');
-            await sendEmailVerification(currentUser);
-        }
-    } catch (error) {
-        showError('ত্রুটি: ' + error.message);
-    }
-};
 
 // ============================================
 // LOGOUT
@@ -948,7 +893,7 @@ async function loadUserProfile(uid) {
         if (followingCount) followingCount.textContent = followingSnapshot.exists() ? Object.keys(followingSnapshot.val()).length : 0;
 
         // ============================================
-        // FRIEND SYSTEM - প্রোফাইলে বাটন শো
+        // FRIEND SYSTEM
         // ============================================
         if (uid !== currentUser.uid) {
             if (followBtn) {
@@ -962,7 +907,7 @@ async function loadUserProfile(uid) {
                 const requestCheck = await get(ref(database, 'friends/' + uid + '/requests/' + currentUser.uid));
                 const requestSent = requestCheck.exists() && requestCheck.val() === 'pending';
                 
-                // Check if request received (from this user)
+                // Check if request received
                 const receivedCheck = await get(ref(database, 'friends/' + currentUser.uid + '/requests/' + uid));
                 const receivedRequest = receivedCheck.exists() && receivedCheck.val() === 'pending';
                 
@@ -1051,9 +996,6 @@ async function loadUserPosts(uid) {
     }
 }
 
-// ============================================
-// VIEW USER PROFILE (সার্চ বা পোস্ট থেকে)
-// ============================================
 window.viewUserProfile = async function(uid) {
     if (uid === currentUser?.uid) {
         showProfile();
@@ -1064,9 +1006,6 @@ window.viewUserProfile = async function(uid) {
     await loadUserProfile(uid);
 };
 
-// ============================================
-// EDIT PROFILE
-// ============================================
 window.editProfile = function() {
     if (viewingProfileUid !== currentUser.uid) return;
     if (editFullName) editFullName.value = currentUserData.fullName || '';
@@ -1142,11 +1081,7 @@ window.showProfileVideos = function() {
 };
 
 // ============================================
-// FRIEND SYSTEM - সম্পূর্ণ
-// ============================================
-
-// ============================================
-// 1. ফ্রেন্ড রিকোয়েস্ট পাঠানো
+// FRIEND SYSTEM
 // ============================================
 window.sendFriendRequest = async function(userId) {
     if (!currentUser) {
@@ -1160,14 +1095,12 @@ window.sendFriendRequest = async function(userId) {
     }
     
     try {
-        // Check if already friends
         const friendCheck = await get(ref(database, 'friends/' + currentUser.uid + '/friends/' + userId));
         if (friendCheck.exists()) {
             alert('এই ব্যক্তি ইতিমধ্যে আপনার বন্ধু!');
             return;
         }
         
-        // Check if request already sent
         const requestCheck = await get(ref(database, 'friends/' + userId + '/requests/' + currentUser.uid));
         if (requestCheck.exists()) {
             if (requestCheck.val() === 'pending') {
@@ -1176,11 +1109,9 @@ window.sendFriendRequest = async function(userId) {
             }
         }
         
-        // Send friend request
         await set(ref(database, 'friends/' + userId + '/requests/' + currentUser.uid), 'pending');
         alert('✅ ফ্রেন্ড রিকোয়েস্ট পাঠানো হয়েছে!');
         
-        // Update UI
         loadFriends();
         loadFriendRequests();
         
@@ -1190,19 +1121,14 @@ window.sendFriendRequest = async function(userId) {
     }
 };
 
-// ============================================
-// 2. ফ্রেন্ড রিকোয়েস্ট গ্রহণ
-// ============================================
 window.acceptFriend = async function(senderId) {
     if (!currentUser) return;
     
     try {
-        // Update request status
         await update(ref(database, 'friends/' + currentUser.uid + '/requests'), {
             [senderId]: 'accepted'
         });
         
-        // Add to friends list (both users)
         await update(ref(database, 'friends/' + currentUser.uid + '/friends'), {
             [senderId]: true
         });
@@ -1210,10 +1136,8 @@ window.acceptFriend = async function(senderId) {
             [currentUser.uid]: true
         });
         
-        // Remove from requests
         await remove(ref(database, 'friends/' + senderId + '/requests/' + currentUser.uid));
         
-        // Refresh UI
         loadFriendRequests();
         loadFriends();
         loadChatList();
@@ -1226,18 +1150,13 @@ window.acceptFriend = async function(senderId) {
     }
 };
 
-// ============================================
-// 3. ফ্রেন্ড রিকোয়েস্ট বাতিল/রিজেক্ট
-// ============================================
 window.rejectFriend = async function(senderId) {
     if (!currentUser) return;
     
     try {
-        // Remove from requests
         await remove(ref(database, 'friends/' + currentUser.uid + '/requests/' + senderId));
         await remove(ref(database, 'friends/' + senderId + '/requests/' + currentUser.uid));
         
-        // Refresh UI
         loadFriendRequests();
         loadFriends();
         
@@ -1249,18 +1168,13 @@ window.rejectFriend = async function(senderId) {
     }
 };
 
-// ============================================
-// 4. বন্ধু রিমুভ করা
-// ============================================
 window.removeFriend = async function(friendId) {
     if (!confirm('এই বন্ধুকে রিমুভ করবেন?')) return;
     
     try {
-        // Remove from both users' friends list
         await remove(ref(database, 'friends/' + currentUser.uid + '/friends/' + friendId));
         await remove(ref(database, 'friends/' + friendId + '/friends/' + currentUser.uid));
         
-        // Refresh UI
         loadFriends();
         loadChatList();
         
@@ -1272,9 +1186,6 @@ window.removeFriend = async function(friendId) {
     }
 };
 
-// ============================================
-// 5. ফ্রেন্ড রিকোয়েস্ট লোড করা
-// ============================================
 async function loadFriendRequests() {
     if (!currentUser) return;
     
@@ -1288,11 +1199,8 @@ async function loadFriendRequests() {
         
         if (snapshot.exists()) {
             const requests = snapshot.val();
-            
-            // Count pending requests
             const pendingRequests = Object.keys(requests).filter(key => requests[key] === 'pending');
             
-            // Update badge
             if (friendRequestBadge) {
                 if (pendingRequests.length > 0) {
                     friendRequestBadge.style.display = 'inline';
@@ -1302,7 +1210,6 @@ async function loadFriendRequests() {
                 }
             }
             
-            // If no pending requests
             if (pendingRequests.length === 0) {
                 if (friendRequestsList) {
                     friendRequestsList.innerHTML = '<p style="color:#666;padding:10px;">কোন ফ্রেন্ড রিকোয়েস্ট নেই</p>';
@@ -1310,7 +1217,6 @@ async function loadFriendRequests() {
                 return;
             }
             
-            // Show each pending request
             for (const senderId of pendingRequests) {
                 try {
                     const userSnapshot = await get(ref(database, 'users/' + senderId));
@@ -1352,9 +1258,6 @@ async function loadFriendRequests() {
     }
 }
 
-// ============================================
-// 6. বন্ধু লিস্ট লোড করা
-// ============================================
 async function loadFriends() {
     if (!currentUser) return;
     
@@ -1416,22 +1319,7 @@ async function loadFriends() {
 }
 
 // ============================================
-// 7. টগল ফলো - পুরোনো ফাংশন রিপ্লেস
-// ============================================
-window.toggleFollow = async function() {
-    if (viewingProfileUid && viewingProfileUid !== currentUser.uid) {
-        // Check if already friends
-        const friendCheck = await get(ref(database, 'friends/' + currentUser.uid + '/friends/' + viewingProfileUid));
-        if (friendCheck.exists()) {
-            window.startChat(viewingProfileUid);
-            return;
-        }
-        window.sendFriendRequest(viewingProfileUid);
-    }
-};
-
-// ============================================
-// MESSAGES - সম্পূর্ণ মেসেজিং সিস্টেম
+// MESSAGES
 // ============================================
 async function loadChatList() {
     if (!currentUser) return;
@@ -1556,7 +1444,6 @@ window.startChat = async function(otherUid) {
     loadMessages(otherUid);
     showMessages();
 
-    // Update chat list highlight
     document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.chat-item').forEach(el => {
         if (el.querySelector('.chat-name')?.textContent === user?.fullName) {
@@ -1579,7 +1466,6 @@ async function loadMessages(otherUid) {
 
     if (chatMessages) chatMessages.innerHTML = '';
 
-    // Load existing messages
     const snapshot = await get(messagesRef);
     if (snapshot.exists()) {
         const messages = snapshot.val();
@@ -1593,7 +1479,6 @@ async function loadMessages(otherUid) {
         });
     }
 
-    // Listen for new messages
     onChildAdded(messagesRef, (snapshot) => {
         const message = snapshot.val();
         message.id = snapshot.key;
@@ -1660,7 +1545,6 @@ async function markMessagesAsRead(otherUid) {
     }
 }
 
-// Send message
 if (sendMessageBtn) {
     sendMessageBtn.addEventListener('click', sendMessage);
 }
@@ -1834,5 +1718,5 @@ if (searchInput) {
     });
 }
 
-console.log('🚀 সোশ্যাল মিডিয়া অ্যাপ চালু!');
-console.log('✅ Google Sign-In + মেসেজিং + ফ্রেন্ড সিস্টেম + সব ফিচার!');
+console.log('🚀 SocialHub চালু হয়েছে!');
+console.log('✅ কোনো ইমেইল ভেরিফিকেশন নেই - সরাসরি লগইন!');
